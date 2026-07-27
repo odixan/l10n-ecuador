@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account Tags for Ecuador Withholding -->
+    <record id="ec_tag_vat_withhold_others" model="account.account.tag">
+        <field name="name">Ecuador VAT Withhold Others</field>
+        <field name="applicability">taxes</field>
+        <field name="country_id" ref="base.ec"/>
+    </record>
+</odoo>

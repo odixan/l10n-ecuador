@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Withholding VAT Taxes for Ecuador -->
+
+    <!-- VAT Withholding 0% -->
+    <record id="tax_withhold_vat_0" model="account.tax">
+        <field name="name">Retencion IVA 0%</field>
+        <field name="type_tax_use">none</field>
+        <field name="amount_type">percent</field>
+        <field name="sequence">60</field>
+        <field name="amount">0</field>
+        <field name="description">RET IVA 0%</field>
+        <field name="tax_group_id" ref="tax_group_withhold_vat_purchase"/>
+        <field name="l10n_ec_xml_fe_code">7</field>
+        <field name="invoice_label">VAT WTH 0%</field>
+        <field name="country_id" ref="base.ec"/>
+    </record>
+
+    <!-- VAT Withholding 0% - Invoice Repartition Lines -->
+    <record id="tax_withhold_vat_0_invoice_base" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">base</field>
+        <field name="document_type">invoice</field>
+        <field name="tax_id" ref="tax_withhold_vat_0"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="tax_withhold_vat_0_invoice_tax" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">tax</field>
+        <field name="document_type">invoice</field>
+        <field name="tax_id" ref="tax_withhold_vat_0"/>
+        <field name="tag_ids" eval="[(6, 0, [ref('ec_tag_vat_withhold_others')])]"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <!-- VAT Withholding 0% - Refund Repartition Lines -->
+    <record id="tax_withhold_vat_0_refund_base" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">base</field>
+        <field name="document_type">refund</field>
+        <field name="tax_id" ref="tax_withhold_vat_0"/>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="tax_withhold_vat_0_refund_tax" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">tax</field>
+        <field name="document_type">refund</field>
+        <field name="tax_id" ref="tax_withhold_vat_0"/>
+        <field name="tag_ids" eval="[(6, 0, [ref('ec_tag_vat_withhold_others')])]"/>
+        <field name="sequence">4</field>
+    </record>
+
+    <!-- VAT Withholding Exempt -->
+    <record id="tax_withhold_vat_exempt" model="account.tax">
+        <field name="name">No procede Retención</field>
+        <field name="type_tax_use">none</field>
+        <field name="amount_type">percent</field>
+        <field name="sequence">60</field>
+        <field name="amount">0</field>
+        <field name="description">No Ret.</field>
+        <field name="tax_group_id" ref="tax_group_withhold_vat_purchase"/>
+        <field name="l10n_ec_xml_fe_code">8</field>
+        <field name="invoice_label">NO VAT WTH</field>
+        <field name="country_id" ref="base.ec"/>
+    </record>
+
+    <!-- VAT Withholding Exempt - Invoice Repartition Lines -->
+    <record id="tax_withhold_vat_exempt_invoice_base" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">base</field>
+        <field name="document_type">invoice</field>
+        <field name="tax_id" ref="tax_withhold_vat_exempt"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="tax_withhold_vat_exempt_invoice_tax" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">tax</field>
+        <field name="document_type">invoice</field>
+        <field name="tax_id" ref="tax_withhold_vat_exempt"/>
+        <field name="tag_ids" eval="[(6, 0, [ref('ec_tag_vat_withhold_others')])]"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <!-- VAT Withholding Exempt - Refund Repartition Lines -->
+    <record id="tax_withhold_vat_exempt_refund_base" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">base</field>
+        <field name="document_type">refund</field>
+        <field name="tax_id" ref="tax_withhold_vat_exempt"/>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="tax_withhold_vat_exempt_refund_tax" model="account.tax.repartition.line">
+        <field name="factor_percent">100</field>
+        <field name="repartition_type">tax</field>
+        <field name="document_type">refund</field>
+        <field name="tax_id" ref="tax_withhold_vat_exempt"/>
+        <field name="tag_ids" eval="[(6, 0, [ref('ec_tag_vat_withhold_others')])]"/>
+        <field name="sequence">4</field>
+    </record>
+</odoo>

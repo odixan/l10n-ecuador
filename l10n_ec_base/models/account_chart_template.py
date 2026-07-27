@@ -29,8 +29,10 @@ class AccountChartTemplate(models.AbstractModel):
         for company in all_companies:
             # set SRI payment for records exist
             self._l10n_ec_set_default_sri_payment(company)
-            Template = self.with_company(company)
-            Template._load_data({"account.tax": self._get_ec_new_account_tax()})
+            # Use sudo() only in post_init_hook context (module installation)
+            # This updates existing companies when module is first installed
+            Template = self.with_company(company).sudo()
+            # Only load journal data and update existing tax data
             Template._load_data({"account.tax": TAX_DATA_EC})
             Template._load_data({"account.tax.group": TAX_GROUP_DATA_EC})
             Template._load_data({"account.journal": self._get_ec_new_account_journal()})
@@ -65,6 +67,14 @@ class AccountChartTemplate(models.AbstractModel):
     @template("ec", "account.journal")
     def _get_ec_new_account_journal(self):
         return self._parse_csv("ec", "account.journal", module="l10n_ec_base")
+
+    @template("ec", "account.tax.group")
+    def _get_ec_new_account_tax_group(self):
+        return self._parse_csv("ec", "account.tax.group", module="l10n_ec_base")
+
+    @template("ec", "account.account.tag")
+    def _get_ec_new_account_tag(self):
+        return self._parse_csv("ec", "account.account.tag", module="l10n_ec_base")
 
     @template("ec", "account.tax")
     def _get_ec_update_account_tax_data(self):

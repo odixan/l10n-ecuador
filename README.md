@@ -1,15 +1,15 @@
 
-[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/l10n-ecuador&target_branch=18.0)
-[![Pre-commit Status](https://github.com/OCA/l10n-ecuador/actions/workflows/pre-commit.yml/badge.svg?branch=18.0)](https://github.com/OCA/l10n-ecuador/actions/workflows/pre-commit.yml?query=branch%3A18.0)
-[![Build Status](https://github.com/OCA/l10n-ecuador/actions/workflows/test.yml/badge.svg?branch=18.0)](https://github.com/OCA/l10n-ecuador/actions/workflows/test.yml?query=branch%3A18.0)
-[![codecov](https://codecov.io/gh/OCA/l10n-ecuador/branch/18.0/graph/badge.svg)](https://codecov.io/gh/OCA/l10n-ecuador)
-[![Translation Status](https://translation.odoo-community.org/widgets/l10n-ecuador-18-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/l10n-ecuador-18-0/?utm_source=widget)
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/l10n-ecuador&target_branch=17.0)
+[![Pre-commit Status](https://github.com/OCA/l10n-ecuador/actions/workflows/pre-commit.yml/badge.svg?branch=17.0)](https://github.com/OCA/l10n-ecuador/actions/workflows/pre-commit.yml?query=branch%3A17.0)
+[![Build Status](https://github.com/OCA/l10n-ecuador/actions/workflows/test.yml/badge.svg?branch=17.0)](https://github.com/OCA/l10n-ecuador/actions/workflows/test.yml?query=branch%3A17.0)
+[![codecov](https://codecov.io/gh/OCA/l10n-ecuador/branch/17.0/graph/badge.svg)](https://codecov.io/gh/OCA/l10n-ecuador)
+[![Translation Status](https://translation.odoo-community.org/widgets/l10n-ecuador-17-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/l10n-ecuador-17-0/?utm_source=widget)
 
 <!-- /!\ do not modify above this line -->
 
 # l10n-ecuador
 
-l10n-ecuador
+TODO: add repo description.
 
 <!-- /!\ do not modify below this line -->
 
@@ -21,7 +21,10 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[l10n_ec_base](l10n_ec_base/) | 18.0.1.0.0 |  | Ecuadorian Localization
+[l10n_ec_account_edi](l10n_ec_account_edi/) | 17.0.1.1.1 |  | Electronic data interchange adapted Ecuadorian localization
+[l10n_ec_base](l10n_ec_base/) | 17.0.1.0.2 |  | Ecuadorian Localization
+[l10n_ec_credit_note](l10n_ec_credit_note/) | 17.0.1.0.0 |  | Credit Notes extension for Ecuador
+[l10n_ec_withhold](l10n_ec_withhold/) | 17.0.1.0.1 |  | Electronic Withholding adapted Ecuadorian localization
 
 [//]: # (end addons)
 

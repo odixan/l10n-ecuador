@@ -1,0 +1,7 @@
+# generated from manifests external_dependencies
+# Updated for Odoo 18.0 compatibility (2025-11-21)
+packaging
+cryptography>=36.0.0
+xades>=1.0.0
+xmlsig>=1.0.0
+zeep
