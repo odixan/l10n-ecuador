@@ -117,22 +117,13 @@ class SriKeyType(models.Model):
                 if extension.value.digital_signature:
                     certificate = other_cert.certificate
                     break
-        private_key_str = convert_key_cer_to_pem(file_content, self.password)
-        start_index = private_key_str.find("Signing Key")
-        # cuando el archivo tiene mas de una firma electronica
-        # viene varias secciones con BEGIN ENCRYPTED PRIVATE KEY
-        # diferenciandose por:
-        # * Decryption Key
-        # * Signing Key
-        # asi que tomar desde Signing Key en caso de existir
-        if start_index >= 0:
-            private_key_str = private_key_str[start_index:]
-        start_index = private_key_str.find("-----BEGIN ENCRYPTED PRIVATE KEY-----")
-        private_key_str = private_key_str[start_index:]
-        private_key = serialization.load_pem_private_key(
-            private_key_str.encode(),
-            self.password.encode(),
-        )
+        # Use the private key directly from the loaded PKCS12 object.
+        # This avoids a subprocess+PEM round-trip (convert_key_cer_to_pem) that
+        # fails on OpenSSL 3.0 when the P12 was encrypted with legacy cipher
+        # suites (e.g. UANATACA / BCE certificates using RC2/3DES PKCS#12 PBE).
+        # pkcs12.load_pkcs12() above already handles those algorithms, so p12.key
+        # is always available and correct regardless of OpenSSL version.
+        private_key = p12.key
         return private_key, certificate
 
     def action_validate_and_load(self):
