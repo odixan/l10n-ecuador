@@ -25,6 +25,23 @@ class WizardCreatePurchaseWithhold(models.TransientModel):
                 record.withhold_line_ids.mapped("withhold_amount")
             )
 
+    @api.model
+    def default_get(self, fields):
+        defaults = super().default_get(fields)
+        # Auto-select the purchase withholding journal if exactly one is configured
+        if "journal_id" not in defaults or not defaults.get("journal_id"):
+            purchase_journals = self.env["account.journal"].search(
+                [
+                    ("type", "=", "general"),
+                    ("l10n_ec_withholding_type", "=", "purchase"),
+                    ("company_id", "=", self.env.company.id),
+                ],
+                limit=2,
+            )
+            if len(purchase_journals) == 1:
+                defaults["journal_id"] = purchase_journals.id
+        return defaults
+
     def _prepare_withholding_vals(self):
         withholding_vals = super()._prepare_withholding_vals()
         withholding_vals["l10n_ec_withholding_type"] = "purchase"
