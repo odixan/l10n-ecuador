@@ -39,6 +39,18 @@ class WizardCreateSaleWithhold(models.TransientModel):
         if len(invoices) == 1:
             defaults["invoice_id"] = invoices.id
             defaults["issue_date"] = invoices.invoice_date
+        # Auto-select the sale withholding journal if exactly one is configured
+        if "journal_id" not in defaults or not defaults.get("journal_id"):
+            sale_journals = self.env["account.journal"].search(
+                [
+                    ("type", "=", "general"),
+                    ("l10n_ec_withholding_type", "=", "sale"),
+                    ("company_id", "=", self.env.company.id),
+                ],
+                limit=2,
+            )
+            if len(sale_journals) == 1:
+                defaults["journal_id"] = sale_journals.id
         return defaults
 
     @api.depends("withhold_line_ids.withhold_amount")
