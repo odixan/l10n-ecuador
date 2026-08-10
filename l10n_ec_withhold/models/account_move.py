@@ -318,7 +318,14 @@ class AccountMove(models.Model):
         ]
         ctx = safe_eval(action["context"])
         ctx.pop("default_type", False)
-        ctx.update(self.env.context.copy())
+        ctx.update(
+            {
+                "active_ids": self.ids,
+                "active_id": self.id if len(self) == 1 else False,
+                "active_model": "account.move",
+                "default_partner_id": self.partner_id.id if len(self) == 1 else False,
+            }
+        )
         action["context"] = ctx
         return action
 
