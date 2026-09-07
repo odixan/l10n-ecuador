@@ -249,6 +249,135 @@ class AccountMove(models.Model):
             payment_data.append(payment_vals)
         return payment_data
 
+    def _l10n_ec_get_totals_sri(self):
+        """Compute Ecuador SRI tax totals for the factura PDF report.
+
+        Returns a dict with:
+          - subtotal_Xpct: taxable base for each IVA rate (after discount)
+          - iva_Xpct: IVA tax amount for each rate
+          - ice, irbpnr: other special tax amounts
+          - subtotal_sin_impuestos: gross before discount
+          - total_descuento: total discount amount
+          - subtotal_con_descuento: net after discount (= amount_untaxed)
+          - amount_total: invoice total including taxes
+        """
+        self.ensure_one()
+
+        result = {
+            "subtotal_15": 0.0,
+            "subtotal_12": 0.0,
+            "subtotal_0": 0.0,
+            "subtotal_no_objeto": 0.0,
+            "subtotal_exento": 0.0,
+            "iva_15": 0.0,
+            "iva_12": 0.0,
+            "ice": 0.0,
+            "irbpnr": 0.0,
+            "servicio_10": 0.0,
+            "subtotal_sin_impuestos": 0.0,
+            "total_descuento": 0.0,
+            "subtotal_con_descuento": 0.0,
+            "amount_total": self.amount_total,
+        }
+
+        # Gross (before discount) and discount totals from invoice lines
+        product_lines = self.invoice_line_ids.filtered(
+            lambda l: l.display_type == "product"
+        )
+        for line in product_lines:
+            gross_line = line.price_unit * line.quantity
+            result["subtotal_sin_impuestos"] += gross_line
+            if line.discount:
+                result["total_descuento"] += gross_line * (line.discount / 100.0)
+
+        result["subtotal_con_descuento"] = (
+            result["subtotal_sin_impuestos"] - result["total_descuento"]
+        )
+
+        # Tax subtotals from OCA's grouped tax data (base = after discount)
+        try:
+            taxes_data = self._l10n_ec_get_taxes_grouped_by_tax_group()
+        except Exception:
+            _logger.warning(
+                "Could not compute EC tax groups for invoice %s", self.name
+            )
+            return result
+
+        for tax_data in taxes_data.get("tax_details", {}).values():
+            tax = tax_data.get("grouping_key")
+            if not tax or not hasattr(tax, "tax_group_id"):
+                continue
+
+            base = abs(tax_data.get("base_amount_currency", 0.0))
+            tax_amount = abs(tax_data.get("tax_amount_currency", 0.0))
+            ec_type = tax.tax_group_id.l10n_ec_type
+
+            if ec_type == "vat15":
+                result["subtotal_15"] += base
+                result["iva_15"] += tax_amount
+            elif ec_type == "vat12":
+                result["subtotal_12"] += base
+                result["iva_12"] += tax_amount
+            elif ec_type == "zero_vat":
+                result["subtotal_0"] += base
+            elif ec_type == "not_charged_vat":
+                result["subtotal_no_objeto"] += base
+            elif ec_type == "exempt_vat":
+                result["subtotal_exento"] += base
+            elif ec_type == "ice":
+                result["ice"] += tax_amount
+            elif ec_type == "irbpnr":
+                result["irbpnr"] += tax_amount
+
+        return result
+
+    def _l10n_ec_get_additional_info_map(self):
+        """Map of {name: description} from l10n_ec_additional_information_move_ids.
+
+        Used to look up a per-line reference (e.g. an "EST xxxxx" value keyed
+        by the line's product default_code) for the "Adicional" column on
+        the RIDE report's line items table.
+        """
+        self.ensure_one()
+        return {
+            rec.name: rec.description
+            for rec in self.l10n_ec_additional_information_move_ids
+        }
+
+    def _l10n_ec_get_additional_info_summary(self):
+        """l10n.ec.additional.information records to show in the
+        "Información Adicional" box.
+
+        Records whose `name` matches a product default_code on one of this
+        invoice's lines are per-line references, already rendered in the
+        "Adicional" column of the line items table — they are excluded here
+        to avoid showing them twice.
+
+        Also appends a synthetic (non-persisted) "RUC Proveedor" entry from
+        the company's electronic invoicing provider RUC setting, if
+        configured — per SRI Resolution NAC-DGERCGC26-00000027 (Anexo 26).
+        Always shown last, mirroring the same rule applied to the actual
+        XML document in account_edi_document.py:_l10n_ec_get_info_additional.
+        """
+        self.ensure_one()
+        line_codes = set(
+            self.invoice_line_ids.filtered(
+                lambda l: l.display_type == "product"
+            ).mapped(lambda l: l.product_id.default_code)
+        )
+        records = self.l10n_ec_additional_information_move_ids.filtered(
+            lambda rec: rec.name not in line_codes
+        )
+        provider_vat = self.company_id.l10n_ec_edi_provider_vat
+        if provider_vat and "RUC Proveedor" not in records.mapped("name"):
+            records += self.env["l10n.ec.additional.information"].new(
+                {
+                    "name": "RUC Proveedor",
+                    "description": provider_vat,
+                }
+            )
+        return records
+
     def _l10n_ec_get_taxes_grouped_by_tax_group(self, exclude_withholding=True):
         self.ensure_one()
 

@@ -389,6 +389,21 @@ class AccountEdiDocument(models.Model):
                     "description": line.description,
                 }
             )
+        # SRI Resolution NAC-DGERCGC26-00000027 (Anexo 26): contributors that
+        # use a third-party electronic invoicing provider must always include
+        # that provider's RUC as an additional information field named
+        # exactly "RUC Proveedor". Appended last so it doesn't shift the
+        # position of any user-entered additional information.
+        provider_vat = self.move_id.company_id.l10n_ec_edi_provider_vat
+        if provider_vat and not any(
+            info["name"] == "RUC Proveedor" for info in info_data
+        ):
+            info_data.append(
+                {
+                    "name": "RUC Proveedor",
+                    "description": provider_vat,
+                }
+            )
         return info_data
 
     def _l10n_ec_get_info_invoice(self):

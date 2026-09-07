@@ -1,33 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <template
-        id="report_withhold_document_ec"
-        inherit_id="l10n_ec_account_edi.report_invoice_document"
-        primary="True"
-        priority="100"
-    >
-        <xpath
-            expr='//t[@t-call="l10n_ec_account_edi.electronic_report_common_head"]'
-            position="after"
-        >
-            <t t-if="o.l10n_latam_document_type_id.internal_type == 'withhold'">
-                <t t-call="l10n_ec_withhold.e_withhold_document_body" />
-            </t>
-        </xpath>
-        <!-- remove the total section because field tax_totals is None for entry-->
-        <xpath
-            expr='//t[@t-call="l10n_ec_account_edi.electronic_report_common_total_info"]'
-            position="replace"
-        />
-    </template>
-
+    <!-- NOTE: withhold-specific rendering (calling e_withhold_document_body
+         and skipping the generic tax_totals fallback for entry-type moves)
+         is handled directly inside l10n_ec_account_edi's own
+         report_invoice_document template (see the `internal_type ==
+         'withhold'` branch in l10n_ec_account_edi/report/report_invoice.xml)
+         instead of living here as a separate `primary="True"` inherited
+         copy. The old approach broke when that view's redesigned RIDE
+         layout replaced its original internal structure
+         (electronic_report_common_head / electronic_report_common_total_info
+         anchors) wholesale, since a primary inherited view combines all
+         non-primary extensions of its target before applying its own
+         xpaths — so these two xpaths could no longer find their anchors.
+         Calling the shared view directly below picks up that logic
+         automatically without needing a separate primary copy at all. -->
     <template id="report_withhold_ec">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-set="lang" t-value="o.partner_id.lang" />
                 <t
-                    t-call="l10n_ec_withhold.report_withhold_document_ec"
+                    t-call="l10n_ec_account_edi.report_invoice_document"
                     t-lang="lang"
                 />
             </t>

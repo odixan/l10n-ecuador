@@ -74,6 +74,30 @@
                             </div>
                         </div>
                     </div>
+                    <!--                    RUC Proveedor Facturación Electrónica (SRI Resolution
+                                            NAC-DGERCGC26-00000027, Anexo 26) -->
+                    <div class="col-12 col-lg-6 o_setting_box"
+                        title="RUC Proveedor Facturación Electrónica">
+                        <div class="o_setting_left_pane" />
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label"
+                                translate="yes">RUC Proveedor Facturación Electrónica</span>
+                            <div class="text-muted"
+                                translate="yes">
+                                 RUC of the third-party electronic invoicing systems/services provider
+                                 (SRI Resolution NAC-DGERCGC26-00000027). Added automatically as the
+                                 last "Información Adicional" entry on every electronic document.
+                            </div>
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="l10n_ec_edi_provider_vat"
+                                        string="RUC Proveedor"
+                                        class="col-lg-4 o_light_label" />
+                                    <field name="l10n_ec_edi_provider_vat" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!--                    Invoice Sequential Start Number -->
                     <div class="col-12 col-lg-6 o_setting_box"
                         title="Invoice Sequential Numbering">

@@ -24,6 +24,14 @@
 
 .table-bordered-black {
     border: 1px solid black;
+    // Without border-collapse, adjacent cell borders (this rule + the
+    // per-th/td rule below) don't merge under the default `separate`
+    // model, so every internal line and the table's outer edge render as
+    // a visibly thicker/doubled 2px line. `collapse` merges them into a
+    // single 1px line, matching the simple-border look used across the
+    // RIDE report (line items table, "Forma de Pago" table, totals
+    // fallback table).
+    border-collapse: collapse;
 }
 
 .table-bordered-black > thead > tr > th,

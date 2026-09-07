@@ -30,6 +30,9 @@ class ResConfigSettings(models.TransientModel):
         default=50.0,
         readonly=False,
     )
+    l10n_ec_edi_provider_vat = fields.Char(
+        related="company_id.l10n_ec_edi_provider_vat", readonly=False
+    )
 
     def action_open_journal_sequence_config(self):
         return {

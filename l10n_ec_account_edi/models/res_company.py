@@ -50,6 +50,15 @@ class ResCompany(models.Model):
         string="Debit Note Version xml",
         default="1.0.0",
     )
+    l10n_ec_edi_provider_vat = fields.Char(
+        string="RUC Proveedor Facturación Electrónica",
+        help="RUC of the third-party electronic invoicing systems/services "
+        'provider, per SRI Resolution NAC-DGERCGC26-00000027 (Anexo 26). '
+        'When set, it is automatically added as a "RUC Proveedor" additional '
+        "information field on every electronic document issued by this "
+        "company (both the signed XML sent to SRI and the printed RIDE), "
+        "as the last entry in the additional information section.",
+    )
 
     @api.model
     def l10n_ec_get_resolution_data(self, date=None):
