@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- RIDE Withhold -->
+    <!-- RIDE Withhold. Customer-info box uses the same inline-style
+         bordered-box pattern as report_invoice_document's own boxes (not
+         the div-bordered/table-no-border classes, which don't reliably
+         render borders in the real wkhtmltopdf pipeline). -->
     <template id="e_withhold_document_body">
-        <div class="div-bordered">
-            <table class="table table-sm table-no-border small">
+        <div style="border:1px solid black; margin-bottom:6px;">
+            <table
+                class="table table-sm table-no-border small"
+                style="margin:0; font-size:10px;"
+            >
                 <tbody>
                     <tr>
-                        <td style="width: 60%">
+                        <td style="width:60%; padding:2px 6px;">
                             <strong>Razón social / Nombres y Apellidos:</strong>
                             <span t-field="partner.name" />
                         </td>
-                        <td>
+                        <td style="padding:2px 6px;">
                             <strong>Identificación:</strong>
                             <span t-field="partner.vat" />
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="padding:2px 6px;">
                             <strong>Fecha de Emisión:</strong>
                             <span t-field="o.date" />
                         </td>
@@ -27,7 +33,7 @@
         <br />
         <table class="table table-sm table-bordered-black">
             <thead>
-                <tr style="font-size: 10px;">
+                <tr style="font-size: 10px; background-color:#f0f0f0;">
                     <th name="th_document" style="width: 10%">Comprobante</th>
                     <th name="th_number" style="width: 15%">Número</th>
                     <th name="th_date" style="width: 10%">Fecha emisión</th>

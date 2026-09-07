@@ -358,75 +358,7 @@
                 <!-- Line items: Código, Cant., Detalle, Adicional, Precio Unitario, Descuento, Total -->
                 <br />
                 <t t-set="add_info_map" t-value="o._l10n_ec_get_additional_info_map()" />
-                <table class="table table-sm table-bordered-black">
-                    <thead>
-                        <tr style="font-size:10px; background-color:#f0f0f0;">
-                            <th class="amount-md text-center">Código</th>
-                            <th class="amount-sm text-center">Cant.</th>
-                            <th class="text-center">Detalle</th>
-                            <th class="amount-md text-center">Adicional</th>
-                            <th class="amount-md text-center">Precio Unitario</th>
-                            <th class="amount-sm text-center">Descuento</th>
-                            <th class="amount-md text-center">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="ordered_lines" t-as="line">
-                            <tr
-                                style="font-size:9px;"
-                                t-if="line.display_type == 'product'"
-                            >
-                                <td class="text-center">
-                                    <span
-                                        t-out="line.product_id and line.product_id.default_code or 'S/N'"
-                                    />
-                                </td>
-                                <td class="text-right">
-                                    <span t-field="line.quantity" />
-                                </td>
-                                <td>
-                                    <span t-field="line.name" />
-                                </td>
-                                <td class="text-center">
-                                    <span
-                                        t-out="add_info_map.get(line.product_id and line.product_id.default_code) or ''"
-                                    />
-                                </td>
-                                <td class="text-right">
-                                    <!-- SRI requires 6 decimal places for precio unitario -->
-                                    <span
-                                        t-out="'$%s' % ('{:,.6f}'.format(line.price_unit),)"
-                                    />
-                                </td>
-                                <td class="text-right">
-                                    <!-- Show discount amount (not percentage) -->
-                                    <span
-                                        t-out="'$%s' % ('{:,.2f}'.format(line.price_unit * line.quantity * (line.discount or 0.0) / 100),)"
-                                    />
-                                </td>
-                                <td class="text-right">
-                                    <span
-                                        t-out="'$%s' % ('{:,.2f}'.format(line.price_subtotal),)"
-                                    />
-                                </td>
-                            </tr>
-                            <t t-if="line.display_type == 'line_section'">
-                                <tr>
-                                    <td colspan="7">
-                                        <span t-field="line.name" />
-                                    </td>
-                                </tr>
-                            </t>
-                            <t t-if="line.display_type == 'line_note'">
-                                <tr>
-                                    <td colspan="7">
-                                        <span t-field="line.name" />
-                                    </td>
-                                </tr>
-                            </t>
-                        </t>
-                    </tbody>
-                </table>
+                <t t-call="l10n_ec_account_edi.electronic_report_line_items_table" />
             </t>
 
             <t
@@ -512,250 +444,11 @@
                             />
                         </td>
                         <td style="width: 40%">
-                            <t t-if="is_factura">
+                            <t
+                                t-if="is_factura or o.l10n_latam_document_type_id.internal_type == 'credit_note'"
+                            >
                                 <t t-set="sri" t-value="o._l10n_ec_get_totals_sri()" />
-                                <table
-                                    class="table table-sm table-no-border small"
-                                    style="width:100%; font-size:10px; margin-bottom:0;"
-                                >
-                                    <tbody>
-                                        <t t-if="sri['subtotal_15'] or sri['iva_15']">
-                                            <tr>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <strong>SUBTOTAL 15%:</strong>
-                                                </td>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; min-width:80px; white-space:nowrap;"
-                                                >
-                                                    <span
-                                                        t-out="'$ {:,.2f}'.format(sri['subtotal_15'])"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        </t>
-                                        <t t-if="sri['subtotal_12'] or sri['iva_12']">
-                                            <tr>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <strong>SUBTOTAL 12%:</strong>
-                                                </td>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <span
-                                                        t-out="'$ {:,.2f}'.format(sri['subtotal_12'])"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        </t>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SUBTOTAL 0%:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['subtotal_0'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SUBTOTAL NO OBJETO IVA:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['subtotal_no_objeto'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SUBTOTAL EXENTO IVA:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['subtotal_exento'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SUBTOTAL SIN IMPUESTOS:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['subtotal_sin_impuestos'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>TOTAL DESCUENTO:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['total_descuento'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SUBTOTAL CON DESCUENTO:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['subtotal_con_descuento'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>ICE:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['ice'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <t t-if="sri['iva_15']">
-                                            <tr>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <strong>IVA 15%:</strong>
-                                                </td>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <span
-                                                        t-out="'$ {:,.2f}'.format(sri['iva_15'])"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        </t>
-                                        <t t-if="sri['iva_12']">
-                                            <tr>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <strong>IVA 12%:</strong>
-                                                </td>
-                                                <td
-                                                    class="text-right"
-                                                    style="padding:1px 4px; white-space:nowrap;"
-                                                >
-                                                    <span
-                                                        t-out="'$ {:,.2f}'.format(sri['iva_12'])"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        </t>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>SERVICIO 10%:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['servicio_10'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <strong>IRBPNR:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:1px 4px; white-space:nowrap;"
-                                            >
-                                                <span
-                                                    t-out="'$ {:,.2f}'.format(sri['irbpnr'])"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <!-- VALOR TOTAL with border highlight -->
-                                        <tr>
-                                            <td
-                                                class="text-right"
-                                                style="padding:2px 4px; border:1px solid black; border-top:2px solid black; background-color:#f0f0f0; white-space:nowrap;"
-                                            >
-                                                <strong>VALOR TOTAL:</strong>
-                                            </td>
-                                            <td
-                                                class="text-right"
-                                                style="padding:2px 4px; border:1px solid black; border-top:2px solid black; white-space:nowrap;"
-                                            >
-                                                <strong>
-                                                    <span
-                                                        t-out="'$ {:,.2f}'.format(sri['amount_total'])"
-                                                    />
-                                                </strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <t t-call="l10n_ec_account_edi.electronic_report_sri_totals" />
                             </t>
                             <t
                                 t-elif="o.l10n_latam_document_type_id.internal_type == 'withhold'"
@@ -779,5 +472,341 @@
             </table>
         </div>
         <t t-call="l10n_ec_account_edi.electronic_report_page_footer" />
+    </template>
+
+    <!-- ================================================================
+         Shared line-items table: Código, Cant., Detalle, Adicional,
+         Precio Unitario, Descuento, Total. Extracted out of
+         report_invoice_document's is_factura branch so credit notes
+         (report_edi_credit_note.xml) render identical columns/styling
+         instead of maintaining a second copy of this markup.
+
+         Expects "ordered_lines", "add_info_map" and "res_company" to
+         already be set in the calling context (t-call inherits the
+         caller's rendering context, so no explicit params are needed —
+         same convention as electronic_report_common_payment_info below).
+         ================================================================ -->
+    <template id="electronic_report_line_items_table">
+        <table class="table table-sm table-bordered-black">
+            <thead>
+                <tr style="font-size:10px; background-color:#f0f0f0;">
+                    <th class="amount-md text-center">Código</th>
+                    <th class="amount-sm text-center">Cant.</th>
+                    <th class="text-center">Detalle</th>
+                    <th class="amount-md text-center">Adicional</th>
+                    <th class="amount-md text-center">Precio Unitario</th>
+                    <th class="amount-sm text-center">Descuento</th>
+                    <th class="amount-md text-center">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="ordered_lines" t-as="line">
+                    <tr
+                        style="font-size:9px;"
+                        t-if="line.display_type == 'product'"
+                    >
+                        <td class="text-center">
+                            <span
+                                t-out="line.product_id and line.product_id.default_code or 'S/N'"
+                            />
+                        </td>
+                        <td class="text-right">
+                            <span t-field="line.quantity" />
+                        </td>
+                        <td>
+                            <span t-field="line.name" />
+                        </td>
+                        <td class="text-center">
+                            <span
+                                t-out="add_info_map.get(line.product_id and line.product_id.default_code) or ''"
+                            />
+                        </td>
+                        <td class="text-right">
+                            <!-- SRI requires 6 decimal places for precio unitario -->
+                            <span
+                                t-out="'$%s' % ('{:,.6f}'.format(line.price_unit),)"
+                            />
+                        </td>
+                        <td class="text-right">
+                            <!-- Show discount amount (not percentage) -->
+                            <span
+                                t-out="'$%s' % ('{:,.2f}'.format(line.price_unit * line.quantity * (line.discount or 0.0) / 100),)"
+                            />
+                        </td>
+                        <td class="text-right">
+                            <span
+                                t-out="'$%s' % ('{:,.2f}'.format(line.price_subtotal),)"
+                            />
+                        </td>
+                    </tr>
+                    <t t-if="line.display_type == 'line_section'">
+                        <tr>
+                            <td colspan="7">
+                                <span t-field="line.name" />
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="line.display_type == 'line_note'">
+                        <tr>
+                            <td colspan="7">
+                                <span t-field="line.name" />
+                            </td>
+                        </tr>
+                    </t>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+    <!-- ================================================================
+         Shared SRI tax totals block (SUBTOTAL 15%/12%/0%/exento/no-objeto,
+         TOTAL DESCUENTO, SUBTOTAL CON DESCUENTO, ICE, IVA 15%/12%,
+         SERVICIO 10%, IRBPNR, VALOR TOTAL). Extracted out of
+         report_invoice_document's is_factura branch so credit notes get
+         the exact same totals breakdown as invoices, computed via the
+         same _l10n_ec_get_totals_sri() method.
+
+         Expects "sri" (the dict returned by _l10n_ec_get_totals_sri())
+         to already be set in the calling context.
+         ================================================================ -->
+    <template id="electronic_report_sri_totals">
+        <table
+            class="table table-sm table-no-border small"
+            style="width:100%; font-size:10px; margin-bottom:0;"
+        >
+            <tbody>
+                <t t-if="sri['subtotal_15'] or sri['iva_15']">
+                    <tr>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <strong>SUBTOTAL 15%:</strong>
+                        </td>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; min-width:80px; white-space:nowrap;"
+                        >
+                            <span
+                                t-out="'$ {:,.2f}'.format(sri['subtotal_15'])"
+                            />
+                        </td>
+                    </tr>
+                </t>
+                <t t-if="sri['subtotal_12'] or sri['iva_12']">
+                    <tr>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <strong>SUBTOTAL 12%:</strong>
+                        </td>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <span
+                                t-out="'$ {:,.2f}'.format(sri['subtotal_12'])"
+                            />
+                        </td>
+                    </tr>
+                </t>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SUBTOTAL 0%:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['subtotal_0'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SUBTOTAL NO OBJETO IVA:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['subtotal_no_objeto'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SUBTOTAL EXENTO IVA:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['subtotal_exento'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SUBTOTAL SIN IMPUESTOS:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['subtotal_sin_impuestos'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>TOTAL DESCUENTO:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['total_descuento'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SUBTOTAL CON DESCUENTO:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['subtotal_con_descuento'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>ICE:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span t-out="'$ {:,.2f}'.format(sri['ice'])" />
+                    </td>
+                </tr>
+                <t t-if="sri['iva_15']">
+                    <tr>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <strong>IVA 15%:</strong>
+                        </td>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <span
+                                t-out="'$ {:,.2f}'.format(sri['iva_15'])"
+                            />
+                        </td>
+                    </tr>
+                </t>
+                <t t-if="sri['iva_12']">
+                    <tr>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <strong>IVA 12%:</strong>
+                        </td>
+                        <td
+                            class="text-right"
+                            style="padding:1px 4px; white-space:nowrap;"
+                        >
+                            <span
+                                t-out="'$ {:,.2f}'.format(sri['iva_12'])"
+                            />
+                        </td>
+                    </tr>
+                </t>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>SERVICIO 10%:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span
+                            t-out="'$ {:,.2f}'.format(sri['servicio_10'])"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <strong>IRBPNR:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:1px 4px; white-space:nowrap;"
+                    >
+                        <span t-out="'$ {:,.2f}'.format(sri['irbpnr'])" />
+                    </td>
+                </tr>
+                <!-- VALOR TOTAL with border highlight -->
+                <tr>
+                    <td
+                        class="text-right"
+                        style="padding:2px 4px; border:1px solid black; border-top:2px solid black; background-color:#f0f0f0; white-space:nowrap;"
+                    >
+                        <strong>VALOR TOTAL:</strong>
+                    </td>
+                    <td
+                        class="text-right"
+                        style="padding:2px 4px; border:1px solid black; border-top:2px solid black; white-space:nowrap;"
+                    >
+                        <strong>
+                            <span
+                                t-out="'$ {:,.2f}'.format(sri['amount_total'])"
+                            />
+                        </strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </template>
 </odoo>
