@@ -9,28 +9,44 @@
             ref="l10n_ec_account_edi.res_config_settings_l10n_ec_edi"
         />
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='l10n_ec_section']" position="inside">
-                <setting string="Default Accounts for  Credit Notes">
-                    <div class="content-group">
-                        <div class="row mt8">
-                            <label
-                                for="l10n_ec_property_account_discount_id"
-                                class="col-lg-5 o_light_label"
-                                string="C.C. Discount"
-                            />
-                            <field name="l10n_ec_property_account_discount_id" />
+            <!--
+                A <setting> must always have a <block> ancestor: in Odoo 18
+                SettingsBlock is what provides the "showAllContainer" context
+                (via useChildSubEnv) that SearchableSetting reads. Placing a
+                <setting> directly inside a plain <div> (l10n_ec_section)
+                crashes the whole Settings page with:
+                  TypeError: Cannot read properties of undefined
+                  (reading 'showAllContainer') at SearchableSetting.visible
+                So this is added as its own <block> right after that div
+                instead of nesting inside it.
+            -->
+            <xpath expr="//div[@id='l10n_ec_section']" position="after">
+                <block
+                    title="Default Accounts for Credit Notes"
+                    id="l10n_ec_credit_note_accounts"
+                    invisible="country_code != 'EC'"
+                >
+                    <setting>
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label
+                                    for="l10n_ec_property_account_discount_id"
+                                    class="col-lg-5 o_light_label"
+                                    string="C.C. Discount"
+                                />
+                                <field name="l10n_ec_property_account_discount_id" />
+                            </div>
+                            <div class="row mt8">
+                                <label
+                                    for="l10n_ec_property_account_return_id"
+                                    class="col-lg-5 o_light_label"
+                                    string="C.C. Refund"
+                                />
+                                <field name="l10n_ec_property_account_return_id" />
+                            </div>
                         </div>
-                        <div class="row mt8">
-                            <label
-                                for="l10n_ec_property_account_return_id"
-                                class="col-lg-5 o_light_label"
-                                string="C.C. Refund"
-                            />
-                            <field name="l10n_ec_property_account_return_id" />
-                        </div>
-                    </div>
-
-                </setting>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>
