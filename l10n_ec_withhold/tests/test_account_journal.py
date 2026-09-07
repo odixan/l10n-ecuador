@@ -1,5 +1,5 @@
 from odoo.tests import common
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 
 class TestAccountJournal(common.TransactionCase):

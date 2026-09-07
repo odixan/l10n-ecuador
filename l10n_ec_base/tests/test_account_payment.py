@@ -1,5 +1,5 @@
 from odoo.tests import tagged
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 

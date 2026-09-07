@@ -3,7 +3,7 @@ from unittest.mock import patch
 from odoo import _
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 from odoo.addons.l10n_ec_account_edi.models.account_edi_document import (
     AccountEdiDocument,

@@ -1,6 +1,6 @@
 from odoo.exceptions import ValidationError
 from odoo.tests import common
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 
 class TestModelA(common.TransactionCase):

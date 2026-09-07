@@ -4,7 +4,8 @@ from datetime import datetime
 import pytz
 
 from odoo.tests import tagged
-from odoo.tools import misc, os
+import os
+from odoo.tools import misc
 
 from odoo.addons.account_edi.tests.common import AccountEdiTestCommon
 
