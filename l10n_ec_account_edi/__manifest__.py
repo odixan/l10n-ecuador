@@ -7,7 +7,7 @@
     "website": "https://github.com/OCA/l10n-ecuador",
     "license": "AGPL-3",
     "post_init_hook": "post_init_hook",
-    "version": "18.0.1.1.1",
+    "version": "18.0.1.1.2",
     "depends": ["account", "account_edi", "l10n_ec", "l10n_ec_base"],
     "external_dependencies": {
         "python": ["cryptography>=36.0.0", "xmlsig>=0.1.9", "xades>=0.2.4", "zeep"]
